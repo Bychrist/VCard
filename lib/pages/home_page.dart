@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:vcard_project/models/contact_model.dart';
 import 'package:vcard_project/pages/scan_page.dart';
 import 'package:vcard_project/providers/contact_provider.dart';
+import 'package:vcard_project/utils/helper_functions.dart';
 
 class HomePage extends StatefulWidget {
   static const String routeName = '/';
@@ -77,19 +78,64 @@ class _HomePageState extends State<HomePage> {
           itemCount: provider.contactList.length,
           itemBuilder: (context, index) {
             final contact = provider.contactList[index];
-            print(provider.contactList.length);
-            return ListTile(
-              leading: const Icon(Icons.person),
-              title: Text(contact.name),
-              trailing: IconButton(
-                onPressed: () {},
-                icon: Icon(
-                    contact.favorite ? Icons.favorite : Icons.favorite_border),
+            return Dismissible(
+              key: UniqueKey(),
+              direction: DismissDirection.endToStart,
+              background: Container(
+                padding: const EdgeInsets.only(
+                  right: 20,
+                ),
+                alignment: Alignment.centerRight,
+                color: Colors.red,
+                child: const Icon(
+                  Icons.delete,
+                  size: 25,
+                  color: Colors.white,
+                ),
+              ),
+              confirmDismiss: _showConfirmationDialog,
+              onDismissed: (_) async {
+                await provider.deleteContact(contact.id);
+                showMsg(context, 'Deleted');
+              },
+              child: ListTile(
+                leading: const Icon(Icons.person),
+                title: Text(contact.name),
+                trailing: IconButton(
+                  onPressed: () {},
+                  icon: Icon(contact.favorite
+                      ? Icons.favorite
+                      : Icons.favorite_border),
+                ),
               ),
             );
           },
         ),
       ),
     );
+  }
+
+  Future<bool?> _showConfirmationDialog(DismissDirection direction) {
+    return showDialog(
+        context: context,
+        builder: (ontext) => AlertDialog(
+              title: const Text('Delete contact'),
+              content:
+                  const Text('Are you sure you want to delete this contact?'),
+              actions: [
+                OutlinedButton(
+                  onPressed: () {
+                    context.pop(false);
+                  },
+                  child: const Text('NO'),
+                ),
+                OutlinedButton(
+                  onPressed: () {
+                    context.pop(true);
+                  },
+                  child: const Text('YES'),
+                )
+              ],
+            ));
   }
 }
