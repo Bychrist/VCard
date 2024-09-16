@@ -54,7 +54,18 @@ class DbHelper {
     final dbId = await db
         .delete(tableContact, where: '$tblContactColId = ?', whereArgs: [id]);
 
-    print('$dbId  $id');
     return dbId;
+  }
+
+  Future<int> updateContactField(int id, Map<String, dynamic> map) async {
+    final db = await _Open();
+    return db.update(tableContact, map,
+        where: '$tblContactColId = ?', whereArgs: [id]);
+  }
+
+  Future<int> updateFavorite(int id, int value) async {
+    final db = await _Open();
+    return db.update(tableContact, {tblContactColFavorite: value},
+        where: '$tblContactColId = ?', whereArgs: [id]);
   }
 }
