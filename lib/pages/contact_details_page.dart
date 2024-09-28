@@ -72,6 +72,24 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                             ],
                           ),
                         ),
+                        ListTile(
+                          title: Text(contact['email']),
+                          trailing: IconButton(
+                            onPressed: () {
+                              emailContact(contact['email']);
+                            },
+                            icon: const Icon(Icons.email),
+                          ),
+                        ),
+                        ListTile(
+                          title: Text(contact['address']),
+                          trailing: IconButton(
+                            onPressed: () {
+                              showMap(contact['address']);
+                            },
+                            icon: const Icon(Icons.location_city),
+                          ),
+                        )
                       ],
                     );
                   }
@@ -100,6 +118,31 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
 
   void smsContact(contact) async {
     final url = 'sms:$contact';
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
+    } else {
+      showMsg(context, 'can not perform this task');
+    }
+  }
+
+  void emailContact(contact) async {
+    final url = 'mailto:$contact';
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
+    } else {
+      showMsg(context, 'can not perform this task');
+    }
+  }
+
+  void showMap(contact) async {
+    String url = '';
+
+    if (Platform.isAndroid) {
+      url = 'geo:0,0?q=$contact';
+    } else {
+      url = 'http://maps.apple.com/?q=$contact';
+    }
+
     if (await canLaunchUrlString(url)) {
       await launchUrlString(url);
     } else {
