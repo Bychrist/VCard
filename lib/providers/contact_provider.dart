@@ -16,7 +16,15 @@ class ContactProvider extends ChangeNotifier {
   }
 
   Future<List<ContactModel>> getAllContacts() async {
+    // contactList.clear();
     contactList = await db.getAllContacts();
+    notifyListeners();
+    return contactList;
+  }
+
+  Future<List<ContactModel>> getAllFavoriteContacts() async {
+    // contactList.clear();
+    contactList = await db.getAllFavoriteContacts();
     notifyListeners();
     return contactList;
   }
@@ -37,5 +45,9 @@ class ContactProvider extends ChangeNotifier {
     final index = contactList.indexOf(contactModel);
     contactList[index].favorite = !contactList[index].favorite;
     notifyListeners();
+  }
+
+  Future<Map<String, dynamic>> getContactDetail(int id) async {
+    return db.getContactDetails(id);
   }
 }
